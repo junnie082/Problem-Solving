@@ -1,53 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void insert(int *ht, int key, int capacity) {
+struct Node {
+	struct Node *next;
+	struct Node *prev;
+	int data;
+};
 
-	int hkey = key % capacity;
-	int index;
-
-	for (int i = 0; i < capacity; i++) {
-		index = (hkey + i) % capacity;
-		if (index < 0) index *= -1;
-		if (ht[index] == NULL) {
-			ht[index] = key;
-			break;
-		}
+void init(struct Node *chain[], int N)
+{
+	for (int i = 0 ; i < N; i++) {
+		chain[i] = NULL;
 	}
 }
 
-int search(int *ht, int key, int capacity) {
+void insert(struct Node *chain[], int data, int N)
+{
+	int hkey = data % N;
+	if (hkey < 0) hkey *= -1;
 
-	int hkey = key % capacity;
-	int index;
+	struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+	newNode -> data = data;
 
-	for (int i = 0; i < capacity; i++) {
-		index = (hkey + i) % capacity;
-		if (index < 0) index *= -1;
-		if (ht[index] == key) return 1;
+	if (chain[hkey] == NULL) {
+		chain[hkey] = newNode;
+		newNode -> next = NULL; 
+		newNode -> prev = NULL; 
+	} else if (chain[hkey] -> next == NULL) {
+		chain[hkey] -> next = newNode;
+		newNode -> prev = chain[hkey];
+		newNode -> next = NULL;
+	} else {
+		newNode -> next = chain[hkey] -> next;
+		chain[hkey] -> next -> prev = newNode; 
+		chain[hkey] -> next = newNode;
+		newNode -> prev = chain[hkey]; 
 	}
-	return 0;
+}
+
+void findRemove(struct Node *chain[], int data, int N)
+{
+	int hkey = data % N;
+	if (hkey < 0) hkey *= -1;
+	struct Node *find = chain[hkey];
+
+	while (find != NULL) {
+		if (find -> data == data) {
+			printf("1\n");
+			return;
+		}
+		find = find -> next;
+	}
+
+	printf("0\n");
+}
+
+void deleteNode(struct Node *chain)
+{
+	struct Node *temp = chain;
+	struct Node *curr = temp;
+	while (temp != NULL) {
+		curr = temp -> next; 
+		free(temp);
+		temp = curr;
+	}
 }
 
 int main()
 {
-	int N, M, key;
+	int N, M, num;
 	scanf("%d", &N);
-	int *A = (int *)malloc(sizeof(int) * N);
-	for (int i = 0 ; i < N; i++) {
-		scanf("%d", &key);
-		insert(A, key, N);
-	}
+	struct Node *chain[N];
+	init(chain, N);
 
-	// for (int i = 0 ; i < N; i++) {
-	// 	printf("A[%d]: %d\n", i, A[i]);
-	// }
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &num); 
+		insert(chain, num, N);
+	}
 
 	scanf("%d", &M);
-	for (int i = 0 ; i < M; i++) {
-		scanf("%d", &key);
-		printf("%d\n", search(A, key, N));
+	for (int i = 0; i < M; i++) {
+		scanf("%d", &num);
+		findRemove(chain, num, N);
 	}
 
-	free(A);
+	for (int i = 0; i < N; i++) {
+		deleteNode(chain[i]);
+	}
 }
