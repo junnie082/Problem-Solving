@@ -1,65 +1,25 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-void merge(int sorted[], int list[], int start, int mid, int end){
-	int i, j, k, l;
-	i = start; 
-	j = mid + 1;
-	l = end; 
-	k = start; 
-
-	while (i <= mid && j <= end) {
-		if (list[i] <= list[j]) {
-			sorted[k++] = list[i++];
-		} else {
-			sorted[k++] = list[j++];
-		}
-	}
-
-	while (i <= mid) {
-		sorted[k++] = list[i++];
-	}
-
-	while (j <= end) {
-		sorted[k++] = list[j++];
-	}
-
-	for (int t = start; t <= end; t++) {
-		list[t] = sorted[t];
-	}
-}
-
-void merge_sort(int sorted[], int list[], int left, int right) {
-	int mid; 
-
-	if (left < right) {
-		mid = (left + right) / 2;
-		merge_sort(sorted, list, left, mid); 
-		merge_sort(sorted, list, mid + 1, right);
-		merge(sorted, list, left, mid, right);
-	}
-}
-
-int main()
-{
-	int N, num;
-	scanf("%d", &N);
-
-	int *list = (int *)malloc(sizeof(int) * N);
-	int *sorted = (int *)malloc(sizeof(int) * N);
+int main() {
+	int N, num, max = 0, min = 1;
+	int counted[10001] = {0};
+	scanf("%d", &N); 
 
 	for (int i = 0; i < N; i++) {
 		scanf("%d", &num);
-		list[i] = num; 
+		counted[num]++;
+		if (max < num) {
+			max = num; 
+		} 
+
+		if (min > num) {
+			min = num; 
+		}
 	}
 
-	merge_sort(sorted, list, 0, N-1);
-
-	for (int i = 0; i < N; i++) {
-		printf("%d\n", list[i]);
+	for (int i = min; i <= max; i++) {
+		for (int j = 0; j < counted[i]; j++) {
+			printf("%d\n", i); 
+		}
 	}
-
-	free(list);
-	free(sorted);
-
 }
