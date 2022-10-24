@@ -1,122 +1,106 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node {
-	struct Node *next;
-	//struct Node *prev; 
-	//int index;
-	int diff;
+// 구조체.
+typedef struct _conference {
 	int start;
-	int end;
-};
+	int end; 
+} conference;
 
-void insertNode(struct Node *chain[], int start, int end, int N){
-	int diff = end - start;
-	int hashkey = diff % N; 
+conference sorted[100001];
 
-	if (diff == 0) hashkey = 0; 
-	else if (hashkey == 0) {
-		hashkey = N; 
+//------------merge sort.
+void merge(char sOre, conference list[], int start, int mid, int end) {
+	int i, j, k; 
+	i = start; 
+	j = mid + 1; 
+	k = start; 
+
+	if (sOre == 'e') {
+		while (i <= mid && j <= end) {
+			if (list[i].end <= list[j].end) {
+				sorted[k++] = list[i++]; 
+			} else {
+				sorted[k++] = list[j++]; 
+			}
+		}
+	} else if (sOre == 's') {
+		while (i <= mid && j <= end) {
+			if (list[i].start <= list[j].start) {
+				sorted[k++] = list[i++]; 
+			} else {
+				sorted[k++] = list[j++];
+			}
+		}
 	}
 
-	struct Node *newNode = malloc(sizeof(struct Node)); 
-	newNode -> diff = diff;
-	newNode -> start = start;
-	newNode -> end = end; 
-	//만약 chain[hashkey] 가 NULL이라면/?
-	if (chain[hashkey] == NULL) {
-		chain[hashkey] = newNode; 
-	} //만약 chain[hashkey] 가 NULL 이 아니라면? 
-	else {
-		struct Node *temp = chain[hashkey];
-		while (temp -> next) {
-			temp = temp -> next; 
-		}
-		temp -> next = newNode; 
-	}	
+	while (i <= mid) {
+		sorted[k++] = list[i++];
+	}
+
+	while (j <= end) {
+		sorted[k++] = list[j++]; 
+	}
+
+	for (i = start; i <= end; i++) {
+		list[i] = sorted[i]; 
+	}
 }
 
-void removeNode(struct Node *head)
-{
-	struct Node *target = head -> next;
-	if (target == NULL) free(head); 
-	else if (target -> next == NULL) {
-		free(target); 
-		free(head); 
-	} else {
-		head -> next = target -> next;
-		free(target); 
+void merge_sort(char sOre, conference list[], int left, int right) {
+	int mid;
+
+	if (left < right) {
+		mid = (left + right) / 2; 
+		merge_sort(sOre, list, left, mid);
+		merge_sort(sOre,list, mid+1, right); 
+		merge(sOre, list, left, mid, right); 
 	}
+}
+//-------------------
+
+int insertCon(conference list[], conference schedule[], int N) {
+	
+	schedule[0] = list[0]; 
+	int k = 1, same = 0; 
+
+	for (int i = 1; i < N; i++) {
+		if (list[i].start < schedule[k-1].end) continue; 
+		else schedule[k++] = list[i]; 
+	}
+
+	return k + same; 
 }
 
 int main()
+{
+	// 1. 구조체 배열 생성.
+	conference *list = malloc(sizeof(conference) * 100001);
 
-{	//malloc은 memory allocation 입니다. 
-	struct Node *head = malloc(sizeof(struct Node));
-	struct Node *tail = malloc(sizeof(struct Node));
-	head -> next = tail;
-	tail -> next = NULL; 
+	int N; 
+	int start, end; 
+	scanf("%d", &N); 
 
-	int N, start, end, sizeOfSchedule = 0;
-	scanf("%d", &N);
-
-	// N 크기 구조체 Node 배열을 만들기.
-	struct Node *chain[N + 1];
-	//chain 배열의 모든 공간을 NULL 로 초기화. 
-	for (int i = 0; i <= N; i++) chain[i] = NULL;
-
-	int diff;
-	//입력을 받고, (end-start)%N 을 hashkey 로 하여, 연결 리스트를 만듦.
 	for (int i = 0; i < N; i++) {
-		scanf("%d %d", &start, &end);
-		if (end > sizeOfSchedule) sizeOfSchedule = end;
-		insertNode(chain, start, end, N); 
+		scanf("%d %d", &start, &end); 
+		list[i].start = start; 
+		list[i].end = end; 
 	}
 
+	// 2. merge sort 이용.
+	merge_sort('s',list, 0, N-1);
+	merge_sort('e', list, 0, N-1); 
 
-	// 스케줄표 배열을 만듦. 
-	int *schedule = (int *)calloc(sizeOfSchedule+1, sizeof(int)); 
-	// 연결 리스트를 head 부터 tail까지 모두 돌면서, 스케줄 표에 넣을 수 있는지를 확인. 
-	int result = 0, flag; 
-	for (int i = 1; i <= N; i++) {
-		struct Node *temp = chain[i];
-		// 리스트를 모두 돌면서, 스케줄 표에 넣을 수 있는지를 확인.
+	// 3. 회의를 배정할 스케줄표 배열 생성
+	conference *schedule = malloc(sizeof(conference) * N);
 
-		//printf("temp -> diff: %d\n", temp->diff); 
-		while (temp) {
-			flag = 1; 
-			//printf("temp -> diff: %d\n", temp -> diff); 
-			for (int j = temp -> start + 1; j < temp -> end; j++){
-				if (schedule[j] == 1) {
-					flag = 0;
-					 break;
-				}
-			}
-			if (flag) {
-				result++; 
-				//printf("curr -> diff: %d curr -> start: %d curr -> end: %d\n", temp -> diff, temp -> start, temp -> end);
+	// 4. 회의 넣기
+	int k = insertCon(list, schedule, N);
 
-				for (int j = temp -> start; j <= temp -> end; j++) {
-					schedule[j] = 1;
-				}
-			}
+ 	printf("%d\n", k); 
+ 	// for (int i = 0; i < k; i++) {
+ 	// 	printf("%d %d\n", schedule[i].start, schedule[i].end);
+ 	// }
 
-			temp = temp -> next;
-		}
-	}
-
-	// 모든 노드 삭제.
-	struct Node *curr = NULL;
-	for (int i = 0; i <= N; i++) {
-		if (chain[i]) { // chain[i] 가 NULL 이 아니라면, 즉 노드가 있다면. 
-			removeNode(chain[i]);
-		}
-	}
-	
-	printf("%d\n", result); 
-
-	free(head);
-	free(tail);
-	free(schedule);
-	
+	free(list); free(schedule); 
 }
