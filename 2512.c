@@ -123,10 +123,8 @@ int binary_search(int budget[], int right, int ave, int M) {
 }
 
 // =====================================================
-// !!!!!!!!!!!!!!!!!!!이 문제의 하이라이트!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // *****************************************************
-
-
 
 
 int main()
@@ -151,9 +149,6 @@ int main()
 	//힙 소트 써야 하나??
 	heap_sort(budget, sorted, N); 
 
-	// for (int i = 0; i < N; i++) {
-	// 	printf("%d\n", sorted[i]); 
-	// }
 
 	// 만약에 모든 예산의 합이 총 예산을 넘지 않는다면, 최댓값을 출력. 
 	if (ave <= M) {
@@ -176,12 +171,6 @@ int main()
 	// 위 과정을 반복해야 한다.
 	int result = binary_search(sorted, N-1, ave, M); 
 
-	//sum /= index; 
-	//sum을 index로 나누는 게 아니라,
-	// N - index 로 나누어야 하지 않을까? 
-	//sum /= (N-index); 
-
-	// 상한액: ave + sum
 	printf("%d\n", result); 
 
 	free(budget); free(sorted); 
