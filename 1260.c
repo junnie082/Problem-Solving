@@ -41,7 +41,8 @@ void DFSandPrint(int dfs[][1001], Node *top, Node *bottom, int N, int existsDFS[
 
 		for (int j = 1; j <= N; j++) {
 			if (dfs[i][j]) {
-				if (existsDFS[j] == 1) continue; 
+				if (existsDFS[j] == 1) continue;  // 이 한 줄 때문에.....
+				// 하루 종일 고민했다... 심지어 다른 사람의 도움을 빌려서@@@@@
 				flag = 0;   
 				dfs[i][j]--; 
 				dfs[j][i]--; 
@@ -55,13 +56,7 @@ void DFSandPrint(int dfs[][1001], Node *top, Node *bottom, int N, int existsDFS[
 				break; 
 			}
 		}
-		// printf("-------\n");
-		// Node *curr = top -> next; 
-		// while (curr != bottom) {
-		// 	printf("stack: %d\n", curr -> number); 
-		// 	curr = curr -> next; 
-		// }
-		// printf("-------\n"); 
+	
 		// 만약 for 문에서 1 부터 N 까지 모두 돌아도 1 이 없다면??
 		// 스택에서 노드 하나를 삭제하여야 한다. 
 		if (flag) {
@@ -111,13 +106,7 @@ void BFSandPrint(int bfs[][1001], Queue *end, Queue *front, int N, int existsBFS
 				}
 			}
 		}
-		// printf("-------\n");
-		// Queue *curr = front -> prev; 
-		// while (curr != end) {
-		// 	printf("stack: %d\n", curr -> number); 
-		// 	curr = curr -> prev; 
-		// }
-		// printf("-------\n"); 
+		
 		deleteQueue(front); 
 	}
 }
