@@ -64,7 +64,6 @@ int main()
 		else if (num <= 0) negative[sizeNeg++] = num;
 	}
 
-
 	// positive는 내림차순으로,
 	// negative는 오름차순으로 정렬한다. 
 	// 무슨 정렬쓸까? 입력 데이터 수가 최대 50으로 많지 않으니...
@@ -72,7 +71,6 @@ int main()
 	// ---> 삽입 정렬을 쓰도록 하자. 
 	insertion_sort(positive, 'p', sizePos);
 	insertion_sort(negative, 'n', sizeNeg);
-
 
 	// 수 묶어 계산하기. 
 	// positive 부터 최대가 나오도록.
