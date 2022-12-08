@@ -9,6 +9,7 @@ int size = 0;
 // 그 이유가 nodes 를 M+1 만큼이 아닌 N+1 개의 메모리만 할당해 주었기 때문이다. 
 
 // 이걸 고쳤더니 이번에는 시간 초과. 
+// 큐에 문제가 있는 듯. 
 
 typedef struct _fromTo {
 	int from; 
