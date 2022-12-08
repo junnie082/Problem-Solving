@@ -1,103 +1,98 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-void swap(int *arr, int a, int b){
-	int temp = arr[a];
-	arr[a] = arr[b];
-	arr[b] = temp;
+void swap(int *queue, int a, int b) {
+	int temp = queue[a];
+	queue[a] = queue[b];
+	queue[b] = temp;
 }
 
-void bubbleUp(int *arr,  int k) {
-
-	int i = k-1;
-	while (i != 0) {
-		if (i % 2 == 0 && i >= 2 && arr[(i-2)/2] > arr[i]) {
-		  	swap(arr, (i-2)/2, i);
-		  	i = (i-2)/2;
-		} else if ( i % 2 == 1 && i>=1 && arr[(i-1)/2] > arr[i]) {
-		  	swap(arr, (i-1)/2, i);
-		  	i = (i-1)/2;	
-		} else break;
-	}
-
-	// 왼쪽 노드에 더 작은 값이 오도록.
-	// if (k >= 2 && k%2 == 1) {
-	// 	if (arr[k-2] > arr[k-1]) {
-	// 		int temp = arr[k-2];
-	// 		arr[k-2] = arr[k-1];
-	// 		arr[k-1] = temp;
-	// 	}
-	// }
-	// for (int i = 0; i < k; i++) {
-	// 	printf("bubbleUP %d  \n", arr[i]);
-	// }
-
-}
-
-void bubbleDown(int *arr, int k){
-	arr[0] = arr[k-1];
-    int i = 0, comp, t; 
-    while (k>1) { 
-    	
-
-    	if (arr[2*i+1] == 0) break;
-
-    	if (arr[2*i + 2] != 0 && arr[2*i + 2] < arr[2*i + 1]) {
-    		swap(arr, 2*i+2, 2*i+1);
-    	}
-
-    	if (arr[i] >= arr[2*i + 1]) {
-    		swap(arr, i, 2*i + 1);
-    		i = 2*i + 1;
-    	}
-    	else if (arr[2*i + 2] != 0 && arr[i] >= arr[2*i + 2]) {
-    		swap(arr, i, 2*i + 2);
-    		i = 2*i + 2; 
-    	} else break;
-
-    }
-
-    arr[k-1] = 0; 
-    t = k-1;
-
-    for (int i = k-1; i>0; i--) bubbleUp(arr, i);
-    for (int t = 0; t < k; t++) {
-    	printf("bubbleDown: %d \n", arr[t]);
-    }
-
-}
-
-void insertElement(int *arr, int new, int k)
+void bubbleUp(int *queue, int order)
 {
-	arr[k-1] = new;
-	bubbleUp(arr, k);
+	
+	while (order != 1) {
+		// 왼쪽 child 노드
+		if (order % 2 == 0) {
+			if (queue[order/2] > queue[order]) {
+				swap(queue, order/2, order);
+				order = order/2;
+			} else break;
+		} else if (order % 2 == 1) {  // 오른쪽 child 노드
+			if (queue[(order - 1)/2] > queue[order]) {
+				swap(queue, (order-1)/2, order);
+				order = (order - 1) / 2; 
+			} else break;
+		}
+	}
+	
 }
 
-int removeElement(int *arr, int k) {
-	int element = arr[0];
-	bubbleDown(arr, k);
+void bubbleDown(int *queue, int order)
+{
+	int i = 1, small, child1, child2;
+	queue[1] = queue[order];
+	queue[order] = 0; 
+	order--;
 
-	return element;
+	while (1){
+
+		if (order == 1) break;
+		else if (order == 2) {
+			if (queue[1] > queue[2]) swap(queue, 1, 2);
+			break;
+		}
+
+		child1 = 2*i;
+		child2 = 2*i + 1;
+
+		if (child1 > order) break;
+		else if (child1 == order) {
+			if (queue[i] > queue[child1]) swap(queue, i, child1);
+			small = child1; 
+		} else if (child2 <= order && queue[child1] == 0) {
+			if (queue[i] > queue[child2]) swap(queue, i, child2);
+			small = child2;
+		} else if (queue[child1] != 0 && queue[child2] != 0) {
+			small = queue[child1] <= queue[child2] ? child1 : child2;
+			if (queue[i] > queue[small]) swap(queue, i, small);
+		} else break;
+
+		i = small;
+	}
+}
+
+void insertNode(int *queue, int new, int order) 
+{
+	queue[order] = new;
+	bubbleUp(queue, order);
+}
+
+int removePeek(int *queue, int order)
+{
+	int peek = queue[1];
+	bubbleDown(queue, order);
+
+	return peek;
 }
 
 int main()
 {
-	int num, N, k=0;
+	int N, order = 0, result, num;
 	scanf("%d", &N);
-	int *arr = calloc(N, sizeof(int));
+	int *queue = calloc(N+1, sizeof(int));
 
-	for (int i = 0; i < N; i++){
+	for (int i = 1; i <= N; i++) {
 		scanf("%d", &num);
-		if (k == 0 && num == 0) printf("%d\n", 0);
+		if (order == 0 && num == 0) result = 0;
 		else if (num == 0) {
-			printf("%d\n", removeElement(arr,k));
-			k--;
+			result = removePeek(queue, order);
+			order--;
 		} else {
-			k++;
-			insertElement(arr, num, k);
+			order++;
+			insertNode(queue, num, order);
+			continue;
 		}
+		printf("%d\n", result);
 	}
 
-
-	free(arr);
 }
