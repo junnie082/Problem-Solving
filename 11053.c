@@ -12,10 +12,7 @@ int longestSequence(int dp[], int num, int max) {
 		}
 		dp[i] = num; 
 	}
-	// for (int i = 1; i <= max; i++) {
-	// 	printf("dp[%d]: %d ", i, dp[i]); 
-	// }
-	// printf("\n"); 
+	
 	return max; 
 }
 
