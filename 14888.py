@@ -1,11 +1,9 @@
-import sys
-
 N = int(input())
 nums = list(map(int, input().split()))
 plus, minus, multi, nanu = map(int, input().split())
 
 count = 0
-maxVal =float('-inf')
+maxVal = float('-inf')
 minVal = float('inf')
 
 def backtrack(count, calculate):
